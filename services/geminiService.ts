@@ -1,26 +1,25 @@
 import { GoogleGenAI } from "@google/genai";
 
-// Safety check: Ensure process is defined before accessing it to prevent white-screen crashes in browser
-const getApiKey = () => {
+export const askGeminiAssistant = async (prompt: string, contextData: string) => {
+  // Safe access to API Key to prevent crash in browsers where process is undefined
+  let apiKey = '';
   try {
-    if (typeof process !== 'undefined' && process.env) {
-      return process.env.API_KEY || '';
+    if (typeof process !== 'undefined' && process.env && process.env.API_KEY) {
+      apiKey = process.env.API_KEY;
     }
   } catch (e) {
-    console.warn("Environment variable access failed, using empty key.");
+    console.warn("Could not access process.env.API_KEY");
   }
-  return '';
-};
 
-const apiKey = getApiKey();
-const ai = new GoogleGenAI({ apiKey });
-
-export const askGeminiAssistant = async (prompt: string, contextData: string) => {
+  // Handle missing key gracefully without crashing the entire app
   if (!apiKey) {
-    return "API Key tidak ditemukan atau tidak terkonfigurasi. Pastikan environment variable API_KEY sudah diset.";
+    return "API Key tidak ditemukan. Pastikan konfigurasi environment variable (API_KEY) sudah benar.";
   }
 
   try {
+    // Initialize here (Lazy Initialization) to avoid top-level load crashes
+    const ai = new GoogleGenAI({ apiKey });
+
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
       contents: `
