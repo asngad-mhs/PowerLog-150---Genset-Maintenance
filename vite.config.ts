@@ -10,10 +10,9 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [react()],
     define: {
-      // Safely expose the API_KEY to the client-side code
+      // Injeksi API Key secara spesifik. 
+      // Vite akan mengganti 'process.env.API_KEY' di dalam kode dengan string nilai API key yang sebenarnya saat build.
       'process.env.API_KEY': JSON.stringify(env.API_KEY),
-      // Prevent crash if code checks for process.env object existence
-      'process.env': {}
     }
   };
 });
