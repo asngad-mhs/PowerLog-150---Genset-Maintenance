@@ -1,24 +1,11 @@
 import { GoogleGenAI } from "@google/genai";
 
 export const askGeminiAssistant = async (prompt: string, contextData: string) => {
-  // Safe access to API Key to prevent crash in browsers where process is undefined
-  let apiKey = '';
-  try {
-    if (typeof process !== 'undefined' && process.env && process.env.API_KEY) {
-      apiKey = process.env.API_KEY;
-    }
-  } catch (e) {
-    console.warn("Could not access process.env.API_KEY");
-  }
-
-  // Handle missing key gracefully without crashing the entire app
-  if (!apiKey) {
-    return "API Key tidak ditemukan. Pastikan konfigurasi environment variable (API_KEY) sudah benar.";
-  }
+  // Access API Key injected by Vite's define plugin
+  // The 'process.env.API_KEY' string is replaced at build time with the actual value
 
   try {
-    // Initialize here (Lazy Initialization) to avoid top-level load crashes
-    const ai = new GoogleGenAI({ apiKey });
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
