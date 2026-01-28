@@ -3,9 +3,14 @@ import { GoogleGenAI } from "@google/genai";
 export const askGeminiAssistant = async (prompt: string, contextData: string) => {
   // Access API Key injected by Vite's define plugin
   // The 'process.env.API_KEY' string is replaced at build time with the actual value
+  const apiKey = process.env.API_KEY;
+
+  if (!apiKey) {
+    return "API Key tidak ditemukan. Pastikan konfigurasi environment variable (API_KEY) sudah benar di Cloudflare Pages.";
+  }
 
   try {
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    const ai = new GoogleGenAI({ apiKey });
 
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
