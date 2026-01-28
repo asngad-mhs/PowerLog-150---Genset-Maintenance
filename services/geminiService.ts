@@ -1,11 +1,23 @@
 import { GoogleGenAI } from "@google/genai";
 
-const apiKey = process.env.API_KEY || '';
+// Safety check: Ensure process is defined before accessing it to prevent white-screen crashes in browser
+const getApiKey = () => {
+  try {
+    if (typeof process !== 'undefined' && process.env) {
+      return process.env.API_KEY || '';
+    }
+  } catch (e) {
+    console.warn("Environment variable access failed, using empty key.");
+  }
+  return '';
+};
+
+const apiKey = getApiKey();
 const ai = new GoogleGenAI({ apiKey });
 
 export const askGeminiAssistant = async (prompt: string, contextData: string) => {
   if (!apiKey) {
-    return "API Key is missing. Please configure the environment variable.";
+    return "API Key tidak ditemukan atau tidak terkonfigurasi. Pastikan environment variable API_KEY sudah diset.";
   }
 
   try {
